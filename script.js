@@ -289,11 +289,11 @@ if(heroStats) observer.observe(heroStats);
    LOAN APPLICATION MODAL
    ========================================================= */
 
-/* IMPORTANT: Replace YOUR_FORMSPREE_ID below with your own
+/* IMPORTANT: Replace const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xwvgzkae'; below with your own
    Formspree endpoint ID after signing up (free) at
    https://formspree.io using narwalfinanceofficial@gmail.com
    Steps are in the README.md file. */
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/YOUR_FORMSPREE_ID';
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xwvgzkae';';
 
 /* Common fields on every loan application */
 const commonFields = [
