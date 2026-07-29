@@ -293,7 +293,7 @@ if(heroStats) observer.observe(heroStats);
    Formspree endpoint ID after signing up (free) at
    https://formspree.io using narwalfinanceofficial@gmail.com
    Steps are in the README.md file. */
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xwvgzkae';';
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xwvgzkae';
 
 /* Common fields on every loan application */
 const commonFields = [
