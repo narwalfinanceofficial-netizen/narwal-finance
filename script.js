@@ -65,7 +65,8 @@ const loanGrid = document.getElementById('loanGrid');
 loans.forEach(l => {
   const card = document.createElement('div');
   card.className = 'loan-card';
-  card.innerHTML = `<div class="loan-icon">${icons[l.icon]}</div><h3>${l.name}</h3><p>${l.desc}</p>`;
+  card.innerHTML = `<div class="loan-icon">${icons[l.icon]}</div><h3>${l.name}</h3><p>${l.desc}</p><span class="apply-hint">Apply Now <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>`;
+  card.addEventListener('click', () => openLoanModal(l.name));
   loanGrid.appendChild(card);
 });
 
@@ -283,3 +284,170 @@ const observer = new IntersectionObserver((entries) => {
 revealEls.forEach(el => observer.observe(el));
 const heroStats = document.querySelector('.hero-stats');
 if(heroStats) observer.observe(heroStats);
+
+/* =========================================================
+   LOAN APPLICATION MODAL
+   ========================================================= */
+
+/* IMPORTANT: Replace YOUR_FORMSPREE_ID below with your own
+   Formspree endpoint ID after signing up (free) at
+   https://formspree.io using narwalfinanceofficial@gmail.com
+   Steps are in the README.md file. */
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/YOUR_FORMSPREE_ID';
+
+/* Common fields on every loan application */
+const commonFields = [
+  { label:'Full Name', name:'Full Name', type:'text', placeholder:'Aapka poora naam', required:true },
+  { label:'Mobile Number', name:'Mobile Number', type:'tel', placeholder:'10-digit mobile number', required:true },
+  { label:'Email (optional)', name:'Email', type:'email', placeholder:'Aapki email id', required:false },
+  { label:'City', name:'City', type:'text', placeholder:'Aapka shehar', required:true }
+];
+
+/* Loan-specific extra fields */
+const loanFormFields = {
+  'Home Loan': [
+    { label:'Required Loan Amount (₹)', name:'Required Loan Amount', type:'number', required:true },
+    { label:'Property Value (₹)', name:'Property Value', type:'number', required:true },
+    { label:'Employment Type', name:'Employment Type', type:'select', options:['Salaried','Self-Employed / Business'], required:true }
+  ],
+  'Personal Loan': [
+    { label:'Monthly Income (₹)', name:'Monthly Income', type:'number', required:true },
+    { label:'Required Loan Amount (₹)', name:'Required Loan Amount', type:'number', required:true },
+    { label:'Purpose of Loan', name:'Purpose', type:'text', placeholder:'Jaise: Medical, Wedding, Travel', required:false }
+  ],
+  'Gold Loan': [
+    { label:'Approx. Gold Weight (grams)', name:'Gold Weight (grams)', type:'number', required:true },
+    { label:'Required Loan Amount (₹)', name:'Required Loan Amount', type:'number', required:true }
+  ],
+  'Business Loan': [
+    { label:'Business Type', name:'Business Type', type:'text', placeholder:'Jaise: Retail, Manufacturing', required:true },
+    { label:'Annual Turnover (₹)', name:'Annual Turnover', type:'number', required:true },
+    { label:'Required Loan Amount (₹)', name:'Required Loan Amount', type:'number', required:true }
+  ],
+  'Loan Against Property (LAP)': [
+    { label:'Property Value (₹)', name:'Property Value', type:'number', required:true },
+    { label:'Required Loan Amount (₹)', name:'Required Loan Amount', type:'number', required:true }
+  ],
+  'LAP Construction Loan': [
+    { label:'Property Value (₹)', name:'Property Value', type:'number', required:true },
+    { label:'Construction Estimate Cost (₹)', name:'Construction Estimate Cost', type:'number', required:true }
+  ],
+  'PMEGP Loan': [
+    { label:'Business Idea / Type', name:'Business Idea', type:'text', required:true },
+    { label:'Required Loan Amount (₹)', name:'Required Loan Amount', type:'number', required:true }
+  ],
+  'Mudra Loan': [
+    { label:'Business Type', name:'Business Type', type:'text', required:true },
+    { label:'Required Loan Amount (₹)', name:'Required Loan Amount', type:'number', required:true }
+  ],
+  'MSME Loan': [
+    { label:'Business Type', name:'Business Type', type:'text', required:true },
+    { label:'Annual Turnover (₹)', name:'Annual Turnover', type:'number', required:true },
+    { label:'Required Loan Amount (₹)', name:'Required Loan Amount', type:'number', required:true }
+  ],
+  'Car Loan': [
+    { label:'Car Model', name:'Car Model', type:'text', placeholder:'Jaise: Maruti Swift', required:true },
+    { label:'On-Road Price (₹)', name:'On-Road Price', type:'number', required:true },
+    { label:'Down Payment Available (₹)', name:'Down Payment Available', type:'number', required:false }
+  ],
+  'Bike Loan': [
+    { label:'Bike Model', name:'Bike Model', type:'text', required:true },
+    { label:'On-Road Price (₹)', name:'On-Road Price', type:'number', required:true }
+  ],
+  'Education Loan': [
+    { label:'Course Name', name:'Course Name', type:'text', required:true },
+    { label:'Institute Name', name:'Institute Name', type:'text', required:true },
+    { label:'Required Loan Amount (₹)', name:'Required Loan Amount', type:'number', required:true }
+  ],
+  'Agriculture Loan': [
+    { label:'Land Area (in Acres)', name:'Land Area (Acres)', type:'number', required:true },
+    { label:'Required Loan Amount (₹)', name:'Required Loan Amount', type:'number', required:true }
+  ],
+  'Commercial Vehicle Loan': [
+    { label:'Vehicle Type', name:'Vehicle Type', type:'text', placeholder:'Jaise: Truck, Bus', required:true },
+    { label:'Required Loan Amount (₹)', name:'Required Loan Amount', type:'number', required:true }
+  ],
+  'Balance Transfer Loan': [
+    { label:'Current Bank / NBFC Name', name:'Current Bank/NBFC', type:'text', required:true },
+    { label:'Outstanding Loan Amount (₹)', name:'Outstanding Loan Amount', type:'number', required:true }
+  ],
+  'Top-up Loan': [
+    { label:'Existing Loan Bank/NBFC', name:'Existing Loan Bank', type:'text', required:true },
+    { label:'Existing Loan Amount (₹)', name:'Existing Loan Amount', type:'number', required:true },
+    { label:'Top-up Amount Required (₹)', name:'Top-up Amount Required', type:'number', required:true }
+  ]
+};
+
+const loanModal = document.getElementById('loanModal');
+const modalTitle = document.getElementById('modalTitle');
+const modalFields = document.getElementById('modalFields');
+const modalLoanType = document.getElementById('modalLoanType');
+const loanApplyForm = document.getElementById('loanApplyForm');
+const modalSuccess = document.getElementById('modalSuccess');
+const modalSubmitBtn = document.getElementById('modalSubmitBtn');
+
+function buildFieldHTML(field){
+  const req = field.required ? 'required' : '';
+  if(field.type === 'select'){
+    const opts = field.options.map(o => `<option value="${o}">${o}</option>`).join('');
+    return `<div><label>${field.label}</label><select name="${field.name}" ${req}><option value="">Select...</option>${opts}</select></div>`;
+  }
+  return `<div><label>${field.label}</label><input type="${field.type}" name="${field.name}" placeholder="${field.placeholder || ''}" ${req}></div>`;
+}
+
+function openLoanModal(loanName){
+  modalTitle.textContent = 'Apply for ' + loanName;
+  modalLoanType.value = loanName;
+  const specificFields = loanFormFields[loanName] || [];
+  const allFieldsHTML = [...commonFields, ...specificFields].map(buildFieldHTML).join('');
+  modalFields.innerHTML = allFieldsHTML;
+  loanApplyForm.style.display = 'block';
+  modalSuccess.classList.remove('show');
+  loanModal.classList.add('open');
+  document.body.classList.add('modal-open');
+}
+
+function closeLoanModal(){
+  loanModal.classList.remove('open');
+  document.body.classList.remove('modal-open');
+}
+
+document.getElementById('modalClose').addEventListener('click', closeLoanModal);
+document.getElementById('modalCloseSuccess').addEventListener('click', closeLoanModal);
+loanModal.addEventListener('click', (e) => { if(e.target === loanModal) closeLoanModal(); });
+document.addEventListener('keydown', (e) => { if(e.key === 'Escape' && loanModal.classList.contains('open')) closeLoanModal(); });
+
+loanApplyForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  modalSubmitBtn.disabled = true;
+  modalSubmitBtn.textContent = 'Sending...';
+
+  const formData = new FormData(loanApplyForm);
+  formData.append('_subject', 'Naya Loan Application: ' + modalLoanType.value);
+
+  try{
+    const response = await fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    });
+    if(response.ok){
+      loanApplyForm.reset();
+      loanApplyForm.style.display = 'none';
+      modalSuccess.classList.add('show');
+    } else {
+      throw new Error('Submit failed');
+    }
+  } catch(err){
+    /* Fallback: open WhatsApp with the details if the email service isn't set up yet */
+    const details = [...formData.entries()].map(([k,v]) => `${k}: ${v}`).join('\n');
+    const waText = `Naya Loan Application\nLoan Type: ${modalLoanType.value}\n${details}`;
+    window.open('https://wa.me/919891070468?text=' + encodeURIComponent(waText), '_blank');
+    loanApplyForm.reset();
+    loanApplyForm.style.display = 'none';
+    modalSuccess.classList.add('show');
+  } finally {
+    modalSubmitBtn.disabled = false;
+    modalSubmitBtn.textContent = 'Submit Application';
+  }
+});

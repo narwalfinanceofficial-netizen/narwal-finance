@@ -302,6 +302,30 @@
   <svg viewBox="0 0 32 32" width="26" height="26" fill="currentColor"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.36.687 4.56 1.872 6.41L4 29l7.79-1.836A11.94 11.94 0 0016.001 27C22.63 27 28 21.627 28 15S22.63 3 16.001 3zm6.977 17.03c-.297.836-1.474 1.53-2.413 1.73-.642.136-1.48.244-4.302-.924-3.61-1.494-5.933-5.146-6.115-5.383-.18-.238-1.466-1.955-1.466-3.73s.917-2.646 1.242-3.008c.325-.362.71-.453.947-.453.237 0 .474.002.68.013.218.012.512-.083.8.61.297.71 1.01 2.457 1.098 2.636.088.18.147.39.03.63-.117.24-.176.39-.35.6-.176.21-.37.47-.528.63-.176.18-.36.372-.155.73.207.36.918 1.51 1.97 2.446 1.353 1.204 2.494 1.577 2.85 1.755.356.18.564.15.77-.09.207-.24.887-1.033 1.124-1.387.237-.354.474-.294.8-.176.325.12 2.06.97 2.414 1.147.355.177.591.264.68.412.088.15.088.85-.208 1.685z"/></svg>
 </a>
 
+<div class="modal-overlay" id="loanModal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose" aria-label="Band karein">&times;</button>
+    <div class="modal-header">
+      <p class="modal-eyebrow">Loan Apply Karein</p>
+      <h3 id="modalTitle">Apply for Loan</h3>
+    </div>
+    <form id="loanApplyForm">
+      <input type="hidden" id="modalLoanType" name="Loan Type">
+      <div class="modal-fields" id="modalFields"></div>
+      <div class="modal-submit-row">
+        <button type="submit" class="btn btn-gold btn-full" id="modalSubmitBtn">Submit Application</button>
+      </div>
+      <p class="modal-note">Submit karte hi aapki details Narwal Finance ki team ko mail ho jayengi. Hum jald hi aapse contact karenge.</p>
+    </form>
+    <div class="modal-success" id="modalSuccess">
+      <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg>
+      <h4>Application Bhej Di Gayi!</h4>
+      <p>Aapki details humein mil gayi hain. Hamari team jald hi aapse contact karegi.</p>
+      <button type="button" class="btn btn-outline-navy" id="modalCloseSuccess">Close</button>
+    </div>
+  </div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>

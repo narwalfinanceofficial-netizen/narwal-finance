@@ -22,6 +22,21 @@ narwal-finance/
 5. 1-2 minute me aapki website live ho jayegi is URL par:
    `https://<aapka-username>.github.io/<repository-name>/`
 
+## ⚠️ Zaroori Step: Email Setup (Loan Applications Ke Liye)
+
+Jab koi customer kisi Loan card par click karke apply karega, uski details **narwalfinanceofficial@gmail.com** par mail honi chahiye. Iske liye ek free service **Formspree** use hoti hai (website static hai, backend nahi hai, isliye yeh zaroori hai):
+
+1. [formspree.io](https://formspree.io) par jaayein aur **narwalfinanceofficial@gmail.com** se free account banayein
+2. Login karne ke baad **"+ New Form"** par click karein, koi bhi naam dein (jaise "Narwal Loan Applications")
+3. Aapko ek endpoint URL milega jaisa: `https://formspree.io/f/xxxxxxxx`
+4. Us URL ko copy kar lein
+5. Repository me `script.js` file kholein → Edit (pencil icon) → Ctrl+F se search karein: `YOUR_FORMSPREE_ID`
+6. Poori line `const FORMSPREE_ENDPOINT = 'https://formspree.io/f/YOUR_FORMSPREE_ID';` ko apne asli URL se replace kar dein
+7. Commit changes kar dein
+8. Formspree apki email par ek verification mail bhejega — us par click karke confirm kar lein (varna forms deliver nahi honge)
+
+Jab tak yeh step nahi hoga, tab tak submit karne par form automatically WhatsApp khol dega (backup ke roop me) — lekin email tabhi jayega jab Formspree setup ho jayega.
+
 ## Website Me Kya Kya Hai
 
 - Home page — Hero banner, Apply Now / Call Now / WhatsApp buttons
